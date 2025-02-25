@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSurf</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+    /* Base styles */
+    
+     :root {
+        --primary: #ffe100;
+        --primary-hover: #e6cb00;
+        --primary-light: #fff8cc;
+        --primary-dark: #997700;
+        --text-primary: #111827;
+        --text-secondary: #4b5563;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f9fafb;
+        --border-color: #e5e7eb;
+        --button-text: #000000;
+        --stats-text: #ffffff;
+        --footer-bg-start: #1f2937;
+        --footer-bg-end: #111827;
+        --card-hover-shadow: rgba(255, 225, 0, 0.2);
+    }
+    /* Dark theme variables */
+    
+    [data-theme="dark"] {
+        --primary: #ffe100;
+        --primary-hover: #fff04d;
+        --primary-light: #665a00;
+        --primary-dark: #fff8cc;
+        --text-primary: #f9fafb;
+        --text-secondary: #9ca3af;
+        --bg-primary: #111827;
+        --bg-secondary: #1f2937;
+        --border-color: #374151;
+        --button-text: #000000;
+        --stats-text: #1f2937;
+        --footer-bg-start: #111827;
+        --footer-bg-end: #1f2937;
+        --card-hover-shadow: rgba(255, 225, 0, 0.1);
+    }
+    /* Theme toggle styles */
+    
+    .theme-toggle {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--primary);
+        color: var(--button-text);
+        border: none;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 50;
+        transition: transform 0.2s;
+    }
+    
+    .theme-toggle:hover {
+        transform: scale(1.1);
+    }
+    /* Custom component styles */
+    
+    .service-card {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--border-color);
+        background: var(--bg-primary);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        backdrop-filter: blur(10px);
+        transform-style: preserve-3d;
+    }
+    
+    .service-card h3 {
+        color: var(--text-primary);
+    }
+    
+    .service-card p {
+        color: var(--text-secondary);
+    }
+    
+    .service-card .service-link {
+        color: var(--primary);
+    }
+    
+    .service-card:hover .service-link {
+        color: var(--primary-hover);
+    }
+    
+    .service-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, var(--primary-light) 0%, var(--primary-dark) 100%);
+        z-index: -1;
+        transition: opacity 0.5s ease;
+        opacity: 0;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-15px) rotateX(10deg);
+        box-shadow: 0 20px 40px var(--card-hover-shadow);
+    }
+    
+    .service-card:hover::before {
+        opacity: 1;
+    }
+    
+    .service-icon-wrapper {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .service-card:hover .service-icon-wrapper {
+        transform: scale(1.1);
+    }
+    
+    .service-icon-wrapper::after {
+        content: '';
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        right: -5px;
+        bottom: -5px;
+        border-radius: 50%;
+        background: linear-gradient( 45deg, rgba(99, 102, 241, 0.2), rgba(255, 225, 0, 0.2));
+        z-index: -1;
+        transition: all 0.3s ease;
+        opacity: 0;
+    }
+    
+    .service-card:hover .service-icon-wrapper::after {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+    
+    .service-title {
+        transition: all 0.3s ease;
+    }
+    
+    .service-card:hover .service-title {
+        color: var(--primary);
+        transform: translateX(5px);
+    }
+    
+    .service-link {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .service-link::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--primary);
+        transition: width 0.3s ease;
+    }
+    
+    .service-card:hover .service-link::after {
+        width: 100%;
+    }
+    
+    .nav-scrolled {
+        background: var(--bg-primary);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    /* Theme-aware text colors */
+    
+    .text-themed-primary {
+        color: var(--text-primary);
+    }
+    
+    .text-themed-secondary {
+        color: var(--text-secondary);
+    }
+    
+    .bg-themed-primary {
+        background-color: var(--bg-primary);
+    }
+    
+    .bg-themed-secondary {
+        background-color: var(--bg-secondary);
+    }
+    /* Smooth transitions for theme changes */
+    
+    body {
+        transition: background-color 0.3s ease, color 0.3s ease;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+    }
+    /* Hero section gradient */
+    
+    .hero-gradient {
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg-secondary) 100%);
+    }
+    /* CTA section gradient */
+    
+    .cta-gradient {
+        background: linear-gradient(90deg, var(--primary) 0%, var(--primary-hover) 100%);
+    }
+    /* Waves */
+    
+    .waves {
+        position: relative;
+        width: 100%;
+        height: 20vh;
+        /* Increased height */
+        margin-bottom: -7px;
+        min-height: 100px;
+        max-height: 200px;
+        /* Increased max-height */
+        background: linear-gradient(to bottom, rgba(99, 102, 241, 0.2), transparent);
+    }
+    /* Animation */
+    
+    .parallax>use {
+        animation: move-forever 25s cubic-bezier(.55, .5, .45, .5) infinite;
+        transition: all 0.3s ease;
+    }
+    
+    .parallax>use:nth-child(1) {
+        animation-delay: -2s;
+        animation-duration: 20s;
+        /* Slower animation */
+    }
+    
+    .parallax>use:nth-child(2) {
+        animation-delay: -3s;
+        animation-duration: 23s;
+        /* Slower animation */
+    }
+    
+    .parallax>use:nth-child(3) {
+        animation-delay: -4s;
+        animation-duration: 25s;
+        /* Slower animation */
+    }
+    
+    .parallax>use:nth-child(4) {
+        animation-delay: -5s;
+        animation-duration: 30s;
+        /* Slower animation */
+    }
+    
+    @keyframes move-forever {
+        0% {
+            transform: translate3d(-90px, 0, 0) scale(1.05);
+        }
+        50% {
+            transform: translate3d(-45px, -2px, 0) scale(1);
+        }
+        100% {
+            transform: translate3d(85px, 0, 0) scale(1.05);
+        }
+    }
+    /*Shrinking waves for mobile*/
+    
+    @media (max-width: 768px) {
+        .waves {
+            height: 60px;
+            /* Increased mobile height */
+            min-height: 60px;
+        }
+        .content {
+            height: 30vh;
+        }
+        h1 {
+            font-size: 24px;
+        }
+    }
+    /* After Services Section*/
+    
+    .process-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        border-radius: 1rem;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .process-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        transition: transform 0.3s ease;
+    }
+    
+    .icon {
+        color: white;
+        width: 30px;
+        height: 30px;
+        transition: transform 0.3s ease;
+    }
+    
+    .process-card:hover .icon-wrapper {
+        transform: rotate(15deg);
+    }
+    
+    .process-card:hover .icon {
+        transform: scale(1.1);
+    }
+    /*Contact us*/
+    
+    .body1 {
+        background: linear-gradient(to bottom, #81A4CD 0%, #194e8b 100%);
+        font-size: 12px;
+    }
+    
+    .body1,
+    button,
+    input {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+    }
+    
+    .background {
+        display: flex;
+        min-height: 50vh;
+    }
+    
+    .container {
+        flex: 0 1 700px;
+        margin: auto;
+        padding: 10px;
+    }
+    
+    .screen {
+        position: relative;
+        background: var(--bg-primary);
+        border-radius: 15px;
+    }
+    
+    .screen:after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 20px;
+        right: 20px;
+        bottom: 0;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, .4);
+        z-index: -1;
+    }
+    
+    .screen-header {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+        background: #4d4d4f;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+    }
+    
+    .screen-header-left {
+        margin-right: auto;
+    }
+    
+    .screen-header-button {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-right: 3px;
+        border-radius: 8px;
+        background: white;
+    }
+    
+    .screen-header-button.close {
+        background: #ed1c6f;
+    }
+    
+    .screen-header-button.maximize {
+        background: #e8e925;
+    }
+    
+    .screen-header-button.minimize {
+        background: #74c54f;
+    }
+    
+    .screen-header-right {
+        display: flex;
+    }
+    
+    .screen-header-ellipsis {
+        width: 3px;
+        height: 3px;
+        margin-left: 2px;
+        border-radius: 8px;
+        background: #999;
+    }
+    
+    .screen-body {
+        display: flex;
+    }
+    
+    .screen-body-item {
+        flex: 1;
+        padding: 50px;
+    }
+    
+    .screen-body-item.left {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .app-title {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        color: var(--text-primary);
+        font-size: 26px;
+    }
+    
+    .app-title:after {
+        content: '';
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: -10px;
+        width: 25px;
+        height: 4px;
+        background: #81A4CD;
+    }
+    
+    .app-contact {
+        margin-top: auto;
+        font-size: 10px;
+        color: var(--text-secondary);
+    }
+    
+    .app-form-group {
+        margin-bottom: 15px;
+    }
+    
+    .app-form-group.message {
+        margin-top: 40px;
+    }
+    
+    .app-form-group.buttons {
+        margin-bottom: 0;
+        text-align: right;
+    }
+    
+    .app-form-control {
+        width: 100%;
+        padding: 10px 0;
+        background: none;
+        border: none;
+        border-bottom: 1px solid var(--text-secondary);
+        color: var(--text-primary);
+        font-size: 14px;
+        text-transform: uppercase;
+        outline: none;
+        transition: border-color .2s;
+    }
+    
+    .app-form-control::placeholder {
+        color: var(--text-secondary);
+    }
+    
+    .app-form-control:focus {
+        border-bottom-color: #ddd;
+    }
+    
+    .app-form-button {
+        background: none;
+        border: none;
+        color: var(--primary);
+        font-size: 14px;
+        cursor: pointer;
+        outline: none;
+    }
+    
+    .app-form-button:hover {
+        color: var(--primary-hover);
+    }
+    
+    @media screen and (max-width: 520px) {
+        .screen-body {
+            flex-direction: column;
+        }
+        .screen-body-item.left {
+            margin-bottom: 30px;
+        }
+        .app-title {
+            flex-direction: row;
+        }
+        .app-title span {
+            margin-right: 12px;
+        }
+        .app-title:after {
+            display: none;
+        }
+    }
+    
+    @media screen and (max-width: 600px) {
+        .screen-body {
+            padding: 40px;
+        }
+        .screen-body-item {
+            padding: 0;
+        }
+    }
+    
+    .hero-section {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(255, 225, 0, 0.1) 100%);
+    }
+    
+    .hero-content {
+        transform-style: preserve-3d;
+        perspective: 1000px;
+    }
+    
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        line-height: 1.1;
+        transform: translateZ(50px);
+        transition: all 0.5s ease;
+    }
+    
+    .hero-subtitle {
+        transform: translateZ(30px);
+        transition: all 0.5s ease;
+    }
+    
+    .hero-buttons {
+        transform: translateZ(40px);
+        transition: all 0.5s ease;
+    }
+    
+    .floating-shapes {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 0;
+        pointer-events: none;
+    }
+    
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--primary), var(--primary-hover));
+        opacity: 0.1;
+        animation: float 20s infinite linear;
+    }
+    
+    .shape:nth-child(1) {
+        width: 150px;
+        height: 150px;
+        top: -75px;
+        left: 10%;
+        animation-delay: 0s;
+    }
+    
+    .shape:nth-child(2) {
+        width: 100px;
+        height: 100px;
+        top: 20%;
+        right: 10%;
+        animation-delay: -5s;
+    }
+    
+    .shape:nth-child(3) {
+        width: 75px;
+        height: 75px;
+        bottom: 20%;
+        left: 15%;
+        animation-delay: -10s;
+    }
+    
+    @keyframes float {
+        0% {
+            transform: rotate(0deg) translate(0, 0) rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg) translate(50px, 50px) rotate(-360deg);
+        }
+    }
+    
+    .hero-button-primary {
+        background: rgb(99, 78, 255);
+        color: rgb(255, 255, 255);
+        padding: 1rem 2rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        transform: translateZ(20px);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+    }
+    
+    .hero-button-primary:hover {
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+    }
+    
+    .hero-button-secondary {
+        border: 2px solid var(--primary);
+        color: var(--primary);
+        padding: 1rem 2rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        transform: translateZ(20px);
+        transition: all 0.3s ease;
+    }
+    
+    .hero-button-secondary:hover {
+        background: rgba(99, 102, 241, 0.1);
+    }
+    
+    .stats-section {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stats-container {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-number {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0.8));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    .stat-label {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+    
+    .stats-bg-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0.1;
+        background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0);
+        background-size: 40px 40px;
+    }
+    /* Sliding Gallery */
+    
+    .sliding-gallery {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    .sliding-gallery::-webkit-scrollbar {
+        display: none;
+    }
+    /* Fade Gallery Animation */
+    
+    .fade-gallery {
+        animation: fadeInOut 15s infinite;
+        opacity: 0;
+    }
+    
+    .fade-gallery:nth-child(1) {
+        animation-delay: 0s;
+    }
+    
+    .fade-gallery:nth-child(2) {
+        animation-delay: 5s;
+    }
+    
+    .fade-gallery:nth-child(3) {
+        animation-delay: 10s;
+    }
+    
+    @keyframes fadeInOut {
+        0%,
+        45%,
+        100% {
+            opacity: 0;
+        }
+        5%,
+        40% {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes blob {
+        0% {
+            transform: translate(0px, 0px) scale(1);
+        }
+        33% {
+            transform: translate(30px, -50px) scale(1.1);
+        }
+        66% {
+            transform: translate(-20px, 20px) scale(0.9);
+        }
+        100% {
+            transform: translate(0px, 0px) scale(1);
+        }
+    }
+    
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+    
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
+    
+    .feature-card {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(255, 225, 0, 0.05), rgba(99, 102, 241, 0.05));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .feature-card:hover::before {
+        opacity: 1;
+    }
+    
+    .cta-card {
+        box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.3);
+        transition: transform 0.3s ease;
+    }
+    
+    .cta-card:hover {
+        transform: translateY(-5px);
+    }
+    /* Project Card Animations */
+    
+    .project-card {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .project-card.animate {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .project-card:nth-child(1) {
+        transition-delay: 0.1s;
+    }
+    
+    .project-card:nth-child(2) {
+        transition-delay: 0.3s;
+    }
+    
+    .project-card:nth-child(3) {
+        transition-delay: 0.5s;
+    }
+    
+    .view-all-btn {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        transition-delay: 0.7s;
+    }
+    
+    .view-all-btn.animate {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    /* Modern 3D Project Card Styles */
+    
+    .projects-section {
+        perspective: 1000px;
+        background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary));
+    }
+    
+    .project-card {
+        transform-style: preserve-3d;
+        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .project-card .card-content {
+        transform-style: preserve-3d;
+    }
+    
+    .project-card img {
+        transform: translateZ(20px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .project-card h3 {
+        transform: translateZ(40px);
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .project-card p {
+        transform: translateZ(30px);
+    }
+    
+    .project-card .tech-stack {
+        transform: translateZ(35px);
+    }
+    
+    .project-card .view-link {
+        transform: translateZ(45px);
+    }
+    
+    .project-card:hover {
+        transform: translateY(-10px) rotateX(10deg);
+    }
+    
+    .project-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( 45deg, rgba(255, 225, 0, 0.1), rgba(99, 102, 241, 0.1));
+        transform: translateZ(-10px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .project-card:hover::before {
+        opacity: 1;
+    }
+    
+    .tech-badge {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .tech-badge:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateZ(50px);
+    }
+    
+    .perspective {
+        perspective: 2000px;
+    }
+    
+    .floating-card {
+        position: absolute;
+        width: 280px;
+        padding: 2rem;
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transform-style: preserve-3d;
+        transition: transform 0.5s ease;
+    }
+    
+    .dev-card {
+        top: 10%;
+        left: 10%;
+        background: linear-gradient(135deg, #6366f1dd, #818cf8dd);
+        animation: float 6s infinite ease-in-out;
+    }
+    
+    .design-card {
+        top: 30%;
+        left: 30%;
+        background: linear-gradient(135deg, #f59e0bdd, #fbbf24dd);
+        animation: float 6s infinite ease-in-out 2s;
+    }
+    
+    .ops-card {
+        top: 50%;
+        left: 15%;
+        background: linear-gradient(135deg, #10b981dd, #34d399dd);
+        animation: float 6s infinite ease-in-out 4s;
+    }
+    
+    .floating-card:hover {
+        transform: translateZ(50px) rotateX(10deg) rotateY(10deg);
+    }
+    
+    .card-content {
+        transform-style: preserve-3d;
+    }
+    
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        transform: translateZ(20px);
+    }
+    
+    .floating-card h3 {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        transform: translateZ(30px);
+    }
+    
+    .feature-list {
+        color: white;
+        transform: translateZ(25px);
+    }
+    
+    .feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .floating-circle {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2), transparent);
+        animation: pulse 4s infinite ease-in-out;
+    }
+    
+    .gradient-text {
+        background: linear-gradient(135deg, #6366f1, #fbbf24);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        backdrop-filter: blur(10px);
+    }
+    
+    .stat-number {
+        display: block;
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: var(--text-secondary);
+    }
+    
+    @keyframes float {
+        0%,
+        100% {
+            transform: translateY(0) rotateX(5deg) rotateY(-5deg);
+        }
+        50% {
+            transform: translateY(-20px) rotateX(-5deg) rotateY(5deg);
+        }
+    }
+    
+    @keyframes pulse {
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 0.2;
+        }
+        50% {
+            transform: scale(1.2);
+            opacity: 0.3;
+        }
+    }
+    
+    .fade-in-content {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeIn 1s forwards ease-out;
+    }
+    
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .floating-card {
+            position: relative;
+            top: auto;
+            left: auto;
+            margin-bottom: 2rem;
+        }
+        .perspective {
+            height: auto;
+        }
+    }
+</style>
+
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="globe" class="w-8 h-8 text-indigo-600"></i>
+                    <span class="text-xl font-bold text-themed-primary">WebSurf</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#services" class="text-themed-secondary hover:text-indigo-600 transition-colors">Services</a>
+                    <a href="#work" class="text-themed-secondary hover:text-indigo-600 transition-colors">Our Work</a>
+                    <a href="#about" class="text-themed-secondary hover:text-indigo-600 transition-colors">About</a>
+                    <a href="#contact" class="text-themed-secondary hover:text-indigo-600 transition-colors">Contact</a>
+                </div>
+                <button class="bg-yellow-500 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition-colors">
+          Get Started
+        </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section pt-32 pb-20 px-6">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+
+        <div class="container mx-auto relative z-10">
+            <div class="hero-content max-w-3xl mx-auto text-center">
+                <h1 class="hero-title mb-6">
+                    Transforming Ideas into
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-yellow-500">
+                        Digital Reality
+                    </span>
+                </h1>
+
+                <p class="hero-subtitle text-xl text-themed-secondary mb-8">
+                    We craft exceptional digital experiences that help businesses thrive in the modern world.
+                </p>
+
+                <div class="hero-buttons flex flex-col sm:flex-row justify-center gap-4">
+                    <button class="hero-button-primary flex items-center justify-center group">
+                        Start Your Project 
+                        <i data-lucide="arrow-right" class="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1"></i>
+                    </button>
+                    <button class="hero-button-secondary">
+                        View Our Work
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div>
+        <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+            <defs>
+                <path id="gentle-wave" 
+                    d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+            </defs>
+            <g class="parallax">
+                <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255, 225, 0, 0.2)" />
+                <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(99, 102, 241, 0.3)" />
+                <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255, 225, 0, 0.4)" />
+                <use xlink:href="#gentle-wave" x="48" y="7" fill="rgba(99, 102, 241, 0.5)" />
+            </g>
+        </svg>
+    </div>
+    <!-- Services Section -->
+    <section id="services" class="py-20 px-6 bg-themed-secondary">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-themed-primary">Our Services</h2>
+            <p class="text-themed-secondary text-center mb-16 max-w-2xl mx-auto">Discover our comprehensive range of digital solutions designed to elevate your business to new heights.</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <div class="service-card p-8 rounded-2xl hover:shadow-xl backdrop-blur-sm bg-white/50 border border-gray-100 group transition-all duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="code-2" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4 text-themed-primary group-hover:text-indigo-600 transition-colors">Custom Software Development</h3>
+                    <p class="text-themed-secondary mb-6 leading-relaxed">Tailored solutions built with cutting-edge technology to solve your unique business challenges and drive innovation.</p>
+                    <a href="#" class="text-indigo-600 flex items-center hover:text-indigo-700 font-medium group-hover:translate-x-2 transition-transform">
+          Learn More <i data-lucide="chevron-right" class="ml-2 w-4 h-4"></i>
+        </a>
+                </div>
+
+                <div class="service-card p-8 rounded-2xl hover:shadow-xl backdrop-blur-sm bg-white/50 border border-gray-100 group transition-all duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="monitor" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4 text-themed-primary group-hover:text-indigo-600 transition-colors">Web Applications</h3>
+                    <p class="text-themed-secondary mb-6 leading-relaxed">Responsive, scalable web applications that deliver exceptional user experiences and drive business growth.</p>
+                    <a href="#" class="text-indigo-600 flex items-center hover:text-indigo-700 font-medium group-hover:translate-x-2 transition-transform">
+          Learn More <i data-lucide="chevron-right" class="ml-2 w-4 h-4"></i>
+        </a>
+                </div>
+
+                <div class="service-card p-8 rounded-2xl hover:shadow-xl backdrop-blur-sm bg-white/50 border border-gray-100 group transition-all duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-500 text-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="palette" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4 text-themed-primary group-hover:text-indigo-600 transition-colors">UI/UX Design</h3>
+                    <p class="text-themed-secondary mb-6 leading-relaxed">Beautiful, intuitive designs that engage users, enhance experiences, and drive meaningful conversions.</p>
+                    <a href="#" class="text-indigo-600 flex items-center hover:text-indigo-700 font-medium group-hover:translate-x-2 transition-transform">
+          Learn More <i data-lucide="chevron-right" class="ml-2 w-4 h-4"></i>
+        </a>
+                </div>
+
+                <div class="service-card p-8 rounded-2xl hover:shadow-xl backdrop-blur-sm bg-white/50 border border-gray-100 group transition-all duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 text-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="store" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4 text-themed-primary group-hover:text-indigo-600 transition-colors">E-commerce Solutions</h3>
+                    <p class="text-themed-secondary mb-6 leading-relaxed">Comprehensive e-commerce solutions that transform your online presence and maximize sales potential.</p>
+                    <a href="#" class="text-indigo-600 flex items-center hover:text-indigo-700 font-medium group-hover:translate-x-2 transition-transform">
+          Learn More <i data-lucide="chevron-right" class="ml-2 w-4 h-4"></i>
+        </a>
+                </div>
+
+                <div class="service-card p-8 rounded-2xl hover:shadow-xl backdrop-blur-sm bg-white/50 border border-gray-100 group transition-all duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 text-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="share-2" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4 text-themed-primary group-hover:text-indigo-600 transition-colors">Digital Marketing</h3>
+                    <p class="text-themed-secondary mb-6 leading-relaxed">Strategic digital marketing services that amplify your brand presence and engage your target audience.</p>
+                    <a href="#" class="text-indigo-600 flex items-center hover:text-indigo-700 font-medium group-hover:translate-x-2 transition-transform">
+          Learn More <i data-lucide="chevron-right" class="ml-2 w-4 h-4"></i>
+        </a>
+                </div>
+
+                <div class="service-card p-8 rounded-2xl hover:shadow-xl backdrop-blur-sm bg-white/50 border border-gray-100 group transition-all duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-500 text-white flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="settings" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4 text-themed-primary group-hover:text-indigo-600 transition-colors">IT Consulting</h3>
+                    <p class="text-themed-secondary mb-6 leading-relaxed">Expert IT consulting services to guide your digital transformation journey and optimize operations.</p>
+                    <a href="#" class="text-indigo-600 flex items-center hover:text-indigo-700 font-medium group-hover:translate-x-2 transition-transform">
+          Learn More <i data-lucide="chevron-right" class="ml-2 w-4 h-4"></i>
+        </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- After Services Section -->
+    <section class="py-20 px-6 bg-themed-primary relative overflow-hidden">
+        <!-- Animated background elements -->
+        <div class="absolute inset-0">
+            <div class="floating-circle top-20 left-20"></div>
+            <div class="floating-circle bottom-20 right-20"></div>
+            <div class="floating-circle top-1/2 right-1/3"></div>
+        </div>
+
+        <div class="container mx-auto relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- 3D Cards Container -->
+                <div class="relative h-[600px] perspective">
+                    <!-- Development Card -->
+                    <div class="floating-card dev-card">
+                        <div class="card-content">
+                            <div class="icon-box">
+                                <i data-lucide="code-2" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <h3>Development</h3>
+                            <ul class="feature-list">
+                                <li><i data-lucide="check-circle" class="w-5 h-5"></i>Modern Tech Stack</li>
+                                <li><i data-lucide="check-circle" class="w-5 h-5"></i>Clean Architecture</li>
+                                <li><i data-lucide="check-circle" class="w-5 h-5"></i>Scalable Solutions</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Design Card -->
+                    <div class="floating-card design-card">
+                        <div class="card-content">
+                            <div class="icon-box">
+                                <i data-lucide="palette" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <h3>Design</h3>
+                            <ul class="feature-list">
+                                <li><i data-lucide="check-circle" class="w-5 h-5"></i>User-Centric</li>
+                                <li><i data-lucide="check-circle" class="w-5 h-5"></i>Modern UI/UX</li>
+                                <li><i data-lucide="check-circle" class="w-5 h-5"></i>Responsive</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Operations Card -->
+                    <div class="floating-card ops-card">
+                        <div class="card-content">
+                            <div class="icon-box">
+                                <i data-lucide="settings" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <h3>Operations</h3>
+                            <ul class="feature-list">
+                                <li><i data-lucide="check-circle" class="w-5 h-5"></i>24/7 Support</li>
+                                <li><i data-lucide="check-circle" class="w-5 h-5"></i>Cloud Infrastructure</li>
+                                <li><i data-lucide="check-circle" class="w-5 h-5"></i>Security First</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="fade-in-content">
+                    <h2 class="text-4xl font-bold mb-6 gradient-text">Our Expertise</h2>
+                    <p class="text-themed-secondary mb-8">
+                        We combine cutting-edge technology with creative innovation to deliver exceptional digital solutions that transform businesses.
+                    </p>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-number">100+</span>
+                            <span class="stat-label">Projects</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">95%</span>
+                            <span class="stat-label">Client Satisfaction</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Why Choose Us -->
+    <section class="py-20 px-6 bg-themed-secondary relative overflow-hidden">
+        <!-- Decorative Background Elements -->
+        <div class="absolute inset-0 opacity-30">
+            <div class="absolute top-0 left-0 w-72 h-72 bg-yellow-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+            <div class="absolute top-0 right-0 w-72 h-72 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+            <div class="absolute bottom-0 left-1/2 w-72 h-72 bg-yellow-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div class="container mx-auto relative">
+            <div class="max-w-3xl mx-auto text-center mb-16">
+                <span class="text-yellow-500 font-semibold text-sm uppercase tracking-wider mb-2 block">Why Choose Us</span>
+                <h2 class="text-4xl font-bold mb-6 text-themed-primary bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-indigo-600">
+                    Excellence in Every Digital Solution
+                </h2>
+                <p class="text-themed-secondary text-lg">
+                    We combine technical expertise with creative innovation to deliver exceptional results that drive your business forward.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="relative mb-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-2xl rotate-3 absolute"></div>
+                        <div class="w-16 h-16 bg-white rounded-2xl shadow-lg relative z-10 flex items-center justify-center">
+                            <i data-lucide="users" class="w-8 h-8 text-yellow-500"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4 text-themed-primary">Expert Team</h3>
+                    <p class="text-themed-secondary">
+                        Our talented professionals bring years of experience across various technologies and industries, ensuring top-tier solutions for your needs.
+                    </p>
+                    <ul class="mt-4 space-y-2">
+                        <li class="flex items-center text-themed-secondary">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-yellow-500 mr-2"></i> Skilled Developers
+                        </li>
+                        <li class="flex items-center text-themed-secondary">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-yellow-500 mr-2"></i> Certified Experts
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="relative mb-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-indigo-400 to-indigo-500 rounded-2xl -rotate-3 absolute"></div>
+                        <div class="w-16 h-16 bg-white rounded-2xl shadow-lg relative z-10 flex items-center justify-center">
+                            <i data-lucide="check-circle" class="w-8 h-8 text-indigo-500"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4 text-themed-primary">Quality Assured</h3>
+                    <p class="text-themed-secondary">
+                        We follow industry best practices and maintain high standards in all our deliverables, ensuring excellence in every project.
+                    </p>
+                    <ul class="mt-4 space-y-2">
+                        <li class="flex items-center text-themed-secondary">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-indigo-500 mr-2"></i> Rigorous Testing
+                        </li>
+                        <li class="flex items-center text-themed-secondary">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-indigo-500 mr-2"></i> Best Practices
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="relative mb-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-indigo-500 rounded-2xl rotate-6 absolute"></div>
+                        <div class="w-16 h-16 bg-white rounded-2xl shadow-lg relative z-10 flex items-center justify-center">
+                            <i data-lucide="globe" class="w-8 h-8 text-indigo-500"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4 text-themed-primary">Client-Focused</h3>
+                    <p class="text-themed-secondary">
+                        Your success is our priority. We work closely with you to understand and exceed your expectations at every step.
+                    </p>
+                    <ul class="mt-4 space-y-2">
+                        <li class="flex items-center text-themed-secondary">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-indigo-500 mr-2"></i> 24/7 Support
+                        </li>
+                        <li class="flex items-center text-themed-secondary">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-indigo-500 mr-2"></i> Custom Solutions
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Stats Section -->
+    <section class="stats-section py-20 px-6">
+        <div class="stats-bg-pattern"></div>
+        <div class="container mx-auto stats-container">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="stat-card text-center">
+                    <div class="stat-number" data-target="75">0</div>
+                    <div class="stat-label">Projects Completed</div>
+                </div>
+                <div class="stat-card text-center">
+                    <div class="stat-number" data-target="50">0</div>
+                    <div class="stat-label">Happy Clients</div>
+                </div>
+                <div class="stat-card text-center">
+                    <div class="stat-number" data-target="8">0</div>
+                    <div class="stat-label">Team Members</div>
+                </div>
+                <div class="stat-card text-center">
+                    <div class="stat-number" data-target="24">0</div>
+                    <div class="stat-label">Support Hours</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image Gallery Section -->
+    <section class="py-20 px-6 bg-themed-secondary">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-16 text-themed-primary">Our Work Culture</h2>
+
+            <!-- Gallery 1: Sliding Gallery -->
+            <div class="mb-20">
+                <h3 class="text-2xl font-semibold mb-8 text-themed-primary">Development Process</h3>
+                <div class="flex gap-6 overflow-x-auto sliding-gallery pb-4">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c" alt="Team Collaboration" class="w-96 h-64 object-cover rounded-lg hover:scale-105 transition-transform duration-300">
+                    <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789" alt="Development Process" class="w-96 h-64 object-cover rounded-lg hover:scale-105 transition-transform duration-300">
+                    <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984" alt="Modern Workspace" class="w-96 h-64 object-cover rounded-lg hover:scale-105 transition-transform duration-300">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c" alt="Team Collaboration" class="w-96 h-64 object-cover rounded-lg hover:scale-105 transition-transform duration-300">
+                    <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789" alt="Development Process" class="w-96 h-64 object-cover rounded-lg hover:scale-105 transition-transform duration-300">
+                    <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984" alt="Modern Workspace" class="w-96 h-64 object-cover rounded-lg hover:scale-105 transition-transform duration-300">
+                </div>
+            </div>
+            <!-- Gallery 3: Fade Gallery -->
+            <div>
+                <h3 class="text-2xl font-semibold mb-8 text-themed-primary">Our Workspace</h3>
+                <div class="relative h-96 rounded-xl overflow-hidden">
+                    <div class="absolute inset-0 fade-gallery">
+                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c" alt="Office Space" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute inset-0 fade-gallery">
+                        <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2" alt="Meeting Room" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute inset-0 fade-gallery">
+                        <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72" alt="Collaborative Space" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- CTA Section -->
+    <section class="py-20 px-6 relative overflow-hidden">
+        <!-- Background Gradient -->
+        <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/10 to-yellow-500/10"></div>
+
+        <div class="container mx-auto relative">
+            <div class="cta-card bg-gradient-to-r from-indigo-600 to-yellow-500 rounded-3xl p-12 relative overflow-hidden">
+                <!-- Decorative Circles -->
+                <div class="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
+                <div class="absolute bottom-0 right-0 w-64 h-64 bg-white/10 rounded-full translate-x-1/2 translate-y-1/2 blur-2xl"></div>
+
+                <!-- Content -->
+                <div class="relative z-10 max-w-3xl mx-auto text-center">
+                    <h2 class="text-4xl font-bold text-white mb-6">
+                        Ready to Transform Your Business?
+                    </h2>
+
+                    <p class="text-lg text-white/90 mb-10">
+                        Let's discuss how we can help you achieve your digital goals and create exceptional experiences for your users.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row justify-center gap-6">
+                        <button class="group bg-white hover:bg-yellow-400 text-indigo-600 px-8 py-3 rounded-full transition-all duration-300 flex items-center justify-center">
+                            Schedule a Consultation
+                            <i data-lucide="arrow-right" class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+
+                        <button class="group bg-transparent border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white/10 transition-all duration-300 flex items-center justify-center">
+                            Learn More
+                            <i data-lucide="chevron-right" class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-12 pt-12 border-t border-white/20">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white">100+</div>
+                            <div class="text-white/80 text-sm mt-1">Projects Delivered</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white">95%</div>
+                            <div class="text-white/80 text-sm mt-1">Client Satisfaction</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white">10+</div>
+                            <div class="text-white/80 text-sm mt-1">Years Experience</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-white">24/7</div>
+                            <div class="text-white/80 text-sm mt-1">Support</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact us -->
+    <section id="contact">
+        <div class="body1">
+            <div class="background">
+                <div class="container">
+                    <div class="screen">
+                        <div class="screen-header">
+                            <div class="screen-header-left">
+                                <div class="screen-header-button close"></div>
+                                <div class="screen-header-button maximize"></div>
+                                <div class="screen-header-button minimize"></div>
+                            </div>
+                            <div class="screen-header-right">
+                                <div class="screen-header-ellipsis"></div>
+                                <div class="screen-header-ellipsis"></div>
+                                <div class="screen-header-ellipsis"></div>
+                            </div>
+                        </div>
+                        <div class="screen-body">
+                            <div class="screen-body-item left">
+                                <div class="app-title">
+                                    <span>CONTACT</span>
+                                    <span>US</span>
+                                </div>
+                                <div class="app-contact">Contact: +92 3350626449</div>
+                                <div class="app-contact">Email: websurftechnologies@gmail.com</div>
+                            </div>
+                            <form action="https://api.web3forms.com/submit" method="POST">
+                                <input type="hidden" name="access_key" value="82cf3c20-46bb-4e35-a114-0a9aac91f190">
+
+                                <div class="screen-body-item">
+                                    <div class="app-form">
+                                        <div class="app-form-group">
+                                            <input class="app-form-control" name="name" placeholder="Name">
+                                        </div>
+                                        <div class="app-form-group">
+                                            <input class="app-form-control" name="email" placeholder="Email">
+                                        </div>
+                                        <div class="app-form-group">
+                                            <input class="app-form-control" name="contact" placeholder="Contact No">
+                                        </div>
+                                        <div class="app-form-group message">
+                                            <input class="app-form-control" name="message" placeholder="Message">
+                                        </div>
+                                        <div class="app-form-group buttons">
+                                            <button class="app-form-button">CANCEL</button>
+                                            <button class="app-form-button">SEND</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-gradient-to-br from-gray-900 to-gray-800 text-white py-16 px-6 relative overflow-hidden">
+        <div class="container mx-auto relative z-10">
+            <!-- Main Footer Content -->
+            <div class="grid md:grid-cols-4 gap-12">
+                <!-- Company Info -->
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i data-lucide="globe" class="w-8 h-8 text-indigo-400"></i>
+                        <span class="text-2xl font-bold bg-clip-text text-transparent bg-white">WebSurf</span>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed">
+                        Crafting digital excellence through innovative solutions and transformative web experiences.
+                    </p>
+                    <!-- Social Links -->
+                    <div class="flex space-x-4">
+                        <a href="#" class="hover:transform hover:scale-110 transition-transform duration-200">
+                            <i data-lucide="facebook" class="w-6 h-6 text-gray-400 hover:text-yellow-400"></i>
+                        </a>
+                        <a href="#" class="hover:transform hover:scale-110 transition-transform duration-200">
+                            <i data-lucide="twitter" class="w-6 h-6 text-gray-400 hover:text-yellow-400"></i>
+                        </a>
+                        <a href="#" class="hover:transform hover:scale-110 transition-transform duration-200">
+                            <i data-lucide="linkedin" class="w-6 h-6 text-gray-400 hover:text-yellow-400"></i>
+                        </a>
+                        <a href="#" class="hover:transform hover:scale-110 transition-transform duration-200">
+                            <i data-lucide="instagram" class="w-6 h-6 text-gray-400 hover:text-yellow-400"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-6 flex items-center space-x-2">
+                        <i data-lucide="layers" class="w-5 h-5 text-yellow-400"></i>
+                        <span>Services</span>
+                    </h4>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-200 flex items-center">
+                                <i data-lucide="chevron-right" class="w-4 h-4 mr-2"></i>Custom Software</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-200 flex items-center">
+                                <i data-lucide="chevron-right" class="w-4 h-4 mr-2"></i>Web Applications</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-200 flex items-center">
+                                <i data-lucide="chevron-right" class="w-4 h-4 mr-2"></i>UI/UX Design</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-200 flex items-center">
+                                <i data-lucide="chevron-right" class="w-4 h-4 mr-2"></i>Shopify Development</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-200 flex items-center">
+                                <i data-lucide="chevron-right" class="w-4 h-4 mr-2"></i>Social Media</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Company -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-6 flex items-center space-x-2">
+                        <i data-lucide="building" class="w-5 h-5 text-yellow-400"></i>
+                        <span>Company</span>
+                    </h4>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-200 flex items-center">
+                                <i data-lucide="chevron-right" class="w-4 h-4 mr-2"></i>About Us</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-200 flex items-center">
+                                <i data-lucide="chevron-right" class="w-4 h-4 mr-2"></i>Our Work</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-200 flex items-center">
+                                <i data-lucide="chevron-right" class="w-4 h-4 mr-2"></i>Careers</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors duration-200 flex items-center">
+                                <i data-lucide="chevron-right" class="w-4 h-4 mr-2"></i>Contact</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-6 flex items-center space-x-2">
+                        <i data-lucide="mail" class="w-5 h-5 text-yellow-400"></i>
+                        <span>Contact</span>
+                    </h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-center space-x-3 text-gray-400">
+                            <i data-lucide="mail" class="w-5 h-5 text-yellow-400"></i>
+                            <a href="mailto:websurf@solutions.com" class="hover:text-yellow-400 transition-colors duration-200">websurf@solutions.com</a>
+                        </li>
+                        <li class="flex items-center space-x-3 text-gray-400">
+                            <i data-lucide="phone" class="w-5 h-5 text-yellow-400"></i>
+                            <a href="tel:+923350626449" class="hover:text-yellow-400 transition-colors duration-200">+92 3350626449</a>
+                        </li>
+                        <li class="flex items-center space-x-3 text-gray-400">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-yellow-400"></i>
+                            <span>Blue Area, Islamabad</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center">
+                <p class="text-gray-400">© 2025 WebSurf. All rights reserved.</p>
+                <div class="mt-4 flex justify-center space-x-6 text-sm text-gray-400">
+                    <a href="#" class="hover:text-yellow-400 transition-colors duration-200">Privacy Policy</a>
+                    <a href="#" class="hover:text-yellow-400 transition-colors duration-200">Terms of Service</a>
+                    <a href="#" class="hover:text-yellow-400 transition-colors duration-200">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Background Decoration -->
+        <div class="absolute inset-0 z-0 opacity-10">
+            <div class="absolute top-0 left-0 w-40 h-40 bg-yellow-400 rounded-full filter blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-40 h-40 bg-indigo-400 rounded-full filter blur-3xl"></div>
+        </div>
+    </footer>
+
+
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <i data-lucide="sun" class="w-5 h-5" id="themeIcon"></i>
+  </button>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('nav-scrolled');
+            } else {
+                navbar.classList.remove('nav-scrolled');
+            }
+        });
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            themeIcon.outerHTML = theme === 'light' ?
+                '<i data-lucide="moon" class="w-5 h-5"></i>' :
+                '<i data-lucide="sun" class="w-5 h-5"></i>';
+            lucide.createIcons();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const heroContent = document.querySelector('.hero-content');
+
+            document.addEventListener('mousemove', (e) => {
+                const {
+                    clientX,
+                    clientY
+                } = e;
+                const {
+                    innerWidth,
+                    innerHeight
+                } = window;
+
+                const xAxis = (clientX - innerWidth / 2) / 50;
+                const yAxis = (clientY - innerHeight / 2) / 50;
+
+                heroContent.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg)`;
+            });
+
+            // Reset transform when mouse leaves
+            document.addEventListener('mouseleave', () => {
+                heroContent.style.transform = 'rotateY(0) rotateX(0)';
+            });
+        });
+
+        // Intersection Observer for stats animation
+        const statsSection = document.querySelector('.stats-section');
+        const statNumbers = document.querySelectorAll('.stat-number');
+        let animated = false;
+
+        const animateStats = () => {
+            statNumbers.forEach(stat => {
+                const target = parseInt(stat.getAttribute('data-target'));
+                const duration = 2000; // Animation duration in milliseconds
+                const steps = 50; // Number of steps in the animation
+                const stepValue = target / steps;
+                let current = 0;
+
+                const updateNumber = () => {
+                    current += stepValue;
+                    if (current < target) {
+                        stat.textContent = Math.round(current);
+                        requestAnimationFrame(updateNumber);
+                    } else {
+                        stat.textContent = target;
+                        // Add "+" symbol if it's not the support hours
+                        if (target !== 24) {
+                            stat.textContent += "+";
+                        }
+                    }
+                };
+
+                updateNumber();
+            });
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !animated) {
+                    animated = true;
+                    animateStats();
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+
+        observer.observe(statsSection);
+
+        // Optional: Reset animation when scrolling back to top
+        window.addEventListener('scroll', () => {
+            if (window.scrollY === 0) {
+                animated = false;
+                statNumbers.forEach(stat => {
+                    stat.textContent = "0";
+                });
+            }
+        });
+
+        // Intersection Observer for project cards animation
+        const projectObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        // Observe all project cards and view all button
+        document.querySelectorAll('.project-card, .view-all-btn').forEach(el => {
+            projectObserver.observe(el);
+        });
+    </script>
+</body>
+
+</html>
